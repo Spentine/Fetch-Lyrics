@@ -2,7 +2,8 @@ import { fetchLyrics, siteNames, sitesData } from "./fetcher/fetchLyrics.js";
 
 async function test() {
   const info = {
-    title: "raison d'etre",
+    title: "ダンシング☆サムライ",
+    composer: "mathru(かにみそP)",
   };
   
   // const testResults = await sitesData.utaten.fetchLyrics(info);

@@ -30,11 +30,13 @@ const sitesData = {
       
       const doc = new DOMParser().parseFromString(html, "text/html");
       
-      // html table with results
-      const searchResultElement = (
-        doc.getElementsByClassName("searchResult")[0]
-          .getElementsByTagName("tbody")[0]
-      );
+      // get table of search results
+      const searchResultElement = doc.querySelector(".searchResult tbody");
+      
+      // if there are no results, return an empty array
+      if (!searchResultElement) {
+        return [];
+      }
       
       const resultElements = [];
       
@@ -51,7 +53,7 @@ const sitesData = {
         const columns = resultElement.children;
         
         const linkElement = columns[0].getElementsByTagName("a")[0];
-        const songLink = linkElement.getAttribute("href");
+        const songLink = `https://utaten.com${linkElement.getAttribute("href")}`;
         const songTitle = linkElement.textContent.trim();
         
         const artistElements = columns[1].getElementsByTagName("p");
@@ -97,7 +99,64 @@ const sitesData = {
         songResults.push(song);
       }
 
-      return songResults;
+      if (songResults.length !== 1) return songResults;
+      
+      // if there is only one result, fetch the full lyrics
+      const song = songResults[0];
+      
+      const fullLyricsResponse = await fetch(song.link);
+      const fullLyricsHtml = await fullLyricsResponse.text();
+      
+      const fullLyricsDoc = new DOMParser().parseFromString(fullLyricsHtml, "text/html");
+      
+      // get lyrics element
+      // note: utaten supports both romaji and hiragana ruby text, but i want the hiragana
+      const lyricsElement = fullLyricsDoc.getElementsByClassName("hiragana")[0];
+      
+      // if it was not successful, return an empty array
+      if (!lyricsElement) {
+        return [];
+      }
+      
+      // get lyrics html collection
+      // note: user child nodes instead of children because text nodes are also included
+      const lyricsCollection = lyricsElement.childNodes;
+      
+      let rubyLyrics = ""; // html string to include ruby text
+      let lyrics = ""; // plain text without ruby text
+      
+      for (const node of lyricsCollection) {
+        // note: use nodeName rather than tagName because it works with text nodes
+        const nodeName = node.nodeName;
+        
+        if (nodeName === "#text") {
+          // if it's a text node, just append the text
+          lyrics += node.textContent.trim();
+          rubyLyrics += node.textContent.trim();
+        } else if (nodeName === "BR") {
+          rubyLyrics += "<br>";
+          lyrics += "\n";
+        } else if (nodeName === "SPAN") {
+          // ruby text is a span
+          // utaten does not use rt tag
+          
+          const rubyBottom = node.getElementsByClassName("rb")[0];
+          const rubyTop = node.getElementsByClassName("rt")[0];
+          
+          const rubyBottomText = rubyBottom.textContent.trim();
+          const rubyTopText = rubyTop.textContent.trim();
+          
+          // append the ruby text
+          rubyLyrics += `<ruby>${rubyBottomText}<rt>${rubyTopText}</rt></ruby>`;
+          lyrics += rubyBottomText;
+        }
+      }
+      
+      // add the full lyrics to the song object
+      song.lyrics = lyrics;
+      song.rubyLyrics = rubyLyrics;
+      
+      return songResults; // [song];
     }
   }
 }
