@@ -54,11 +54,11 @@ const sitesData = {
         const songLink = linkElement.getAttribute("href");
         const songTitle = linkElement.textContent.trim();
         
-        const artistElement = columns[1].getElementsByTagName("p")[0];
+        const artistElements = columns[1].getElementsByTagName("p");
         const artists = [];
         // first artist is a general artist and doesn't follow the same format
-        for (let i = 1; i < artistElement.children.length; i++) {
-          const element = artistElement.children[i];
+        for (let i = 1; i < artistElements.length; i++) {
+          const element = artistElements[i];
           const type = element.firstChild;
           const typeMap = {
             "作詞": "lyricist",
@@ -71,9 +71,15 @@ const sitesData = {
           // if it doesn't match any type, idk the category so it will be ignored
           if (!typeKey) continue;
           
-          const name = element.children[0].textContent.trim();
+          const artistSameType = [];
+          const artistNames = element.children[0].children;
+          
+          for (const artistName of artistNames) {
+            artistSameType.push(artistName.textContent.trim());
+          }
+          
           artists.push({
-            name: name,
+            artists: artistSameType,
             type: typeMap[typeKey],
           });
         }
