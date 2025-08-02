@@ -24,7 +24,7 @@ const info = {
   lyricist,
   composer,
   opening,
-  body
+  contains
 }
 ```
 

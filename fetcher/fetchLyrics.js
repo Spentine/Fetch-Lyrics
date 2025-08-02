@@ -1,5 +1,7 @@
 import { DOMParser, Element } from "jsr:@b-fuze/deno-dom";
 
+const requiredFields = ["title", "artist", "lyricist", "composer", "opening", "contains"];
+
 const sitesData = {
   utaten: {
     name: "UtaTen",
@@ -13,7 +15,7 @@ const sitesData = {
         &artist_name=${encodeURI(info.artist)}
         &title=${encodeURI(info.title)}
         &beginning=${encodeURI(info.opening)}
-        &body=${encodeURI(info.body)}
+        &body=${encodeURI(info.contains)}
         &lyricist=${encodeURI(info.lyricist)}
         &composer=${encodeURI(info.composer)}
         &sub_title=
@@ -165,7 +167,6 @@ const siteNames = Object.keys(sitesData);
 
 async function fetchLyrics(info) {
   const results = [];
-  const requiredFields = ["title", "artist", "lyricist", "composer", "opening", "body"];
   
   for (const field of requiredFields) {
     if (!info[field]) {
@@ -180,7 +181,7 @@ async function fetchLyrics(info) {
       if (songCandidates) {
         for (const song of songCandidates) {
           results.push({
-            site: site.name,
+            site: siteName, // this is an api so don't use site.name
             url: site.url,
             songInfo: song,
           });
@@ -194,4 +195,4 @@ async function fetchLyrics(info) {
   return results;
 }
 
-export { fetchLyrics, siteNames, sitesData };
+export { fetchLyrics, siteNames, sitesData, requiredFields };
