@@ -21,11 +21,10 @@ Popular song lyric sites will be added:
 const info = {
   title,
   artist,
-  singer,
   lyricist,
   composer,
-  openingLyric,
-  partOfLyric
+  opening,
+  body
 }
 ```
 
