@@ -14,3 +14,19 @@ Popular song lyric sites will be added:
 - (English and International)
   - Genius
   - Spotify (if possible)
+
+## API
+
+```js
+const info = {
+  title,
+  artist,
+  singer,
+  lyricist,
+  composer,
+  openingLyric,
+  partOfLyric
+}
+```
+
+Results will be returned in an array.
