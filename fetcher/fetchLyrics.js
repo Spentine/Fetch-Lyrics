@@ -6,6 +6,12 @@ const sitesData = {
   utaten: {
     name: "UtaTen",
     url: "https://utaten.com",
+    /**
+     * fetch lyrics from utaten
+     * if there is only one result, fetch the full lyrics
+     * @param {Object} info - song information (in general format)
+     * @returns {Promise<Array>} - array of song results
+     */
     fetchLyrics: async (info) => {
       // Implementation for fetching lyrics from UtaTen
       
@@ -165,9 +171,16 @@ const sitesData = {
 
 const siteNames = Object.keys(sitesData);
 
+/**
+ * fetch lyrics from all sites
+ * @param {Object} info - song information (in general format)
+ * @returns {Promise<Array>} - array of song results from all sites
+ */
 async function fetchLyrics(info) {
   const results = [];
-  
+
+  // fill in missing fields with empty strings
+  // consider replacing with null
   for (const field of requiredFields) {
     if (!info[field]) {
       info[field] = "";
