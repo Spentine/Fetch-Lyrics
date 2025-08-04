@@ -1,4 +1,5 @@
 import { DOMParser, Element } from "jsr:@b-fuze/deno-dom";
+import { encodeHex } from "jsr:@std/encoding/hex";
 
 const requiredFields = ["title", "artist", "lyricist", "composer", "opening", "contains"];
 
@@ -112,7 +113,18 @@ const sitesData = {
       // if there is only one result, fetch the full lyrics
       const song = songResults[0];
       
-      const fullLyricsResponse = await fetch(song.link);
+      // get the song link
+      const songLink = song.link;
+      const { lyrics, rubyLyrics } = await sitesData.utaten.singlePageLyrics(songLink);
+      
+      // add the full lyrics to the song object
+      song.lyrics = lyrics;
+      song.rubyLyrics = rubyLyrics;
+      
+      return songResults; // [song];
+    },
+    singlePageLyrics: async (link) => {
+      const fullLyricsResponse = await fetch(link);
       const fullLyricsHtml = await fullLyricsResponse.text();
       
       const fullLyricsDoc = new DOMParser().parseFromString(fullLyricsHtml, "text/html");
@@ -160,11 +172,11 @@ const sitesData = {
         }
       }
       
-      // add the full lyrics to the song object
-      song.lyrics = lyrics;
-      song.rubyLyrics = rubyLyrics;
-      
-      return songResults; // [song];
+      // return the lyrics and ruby lyrics
+      return {
+        lyrics: lyrics.trim(),
+        rubyLyrics: rubyLyrics.trim(),
+      };
     }
   },
   utanet: {
@@ -178,15 +190,17 @@ const sitesData = {
     async fetchLyrics(info) {
       const results = [];
       
-      // todo: add support for other fields which uses previous system which can be accessed by clicking the lyrics search option
-      
       // utanet only supports search by a single field
       const availableFields = [
-        "title",
+        "title", "artist", "lyricist", "composer", "contains",
       ];
       
       const fieldURL = {
-        "title": "https://www.uta-net.com/search/?sort=4&Keyword=",
+        "title": "https://www.uta-net.com/user/index_search/search2.html?st=Popular1&ct=10&rc=10&md=Title&kw=",
+        "artist": "https://www.uta-net.com/user/index_search/search2.html?st=Popular1&ct=10&rc=10&md=Artist&kw=",
+        "lyricist": "https://www.uta-net.com/user/index_search/search2.html?st=Popular1&ct=10&rc=10&md=Sakushisha&kw=",
+        "composer": "https://www.uta-net.com/user/index_search/search2.html?st=Popular1&ct=10&rc=10&md=Sakkyokusha&kw=",
+        "contains": "https://www.uta-net.com/user/index_search/search2.html?st=Popular1&ct=10&rc=10&md=Kashi&kw=",
       };
       
       // construct array with available fields
@@ -195,9 +209,92 @@ const sitesData = {
       for (const field of searchFields) {
         const value = info[field];
         // implement the fetch logic for utanet
+        
+        const fullURL = fieldURL[field] + encodeURIComponent(value);
+        const response = await fetch(fullURL);
+        const html = await response.text();
+        
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        
+        // get table of search results
+        const searchList = doc.getElementById("search_list");
+        const childrenRows = searchList.children;
+        
+        // rows are in pairs of two; title and lyrics
+        for (let i = 0; i < childrenRows.length; i += 2) {
+          const titleRow = childrenRows[i];
+          const lyricsRow = childrenRows[i + 1];
+          
+          // how convenient that it's just the children
+          // no need to do any complex parsing
+          const title = titleRow.children[0].textContent.trim();
+          const artist = titleRow.children[1].textContent.trim();
+          const lyricist = titleRow.children[2].textContent.trim();
+          const composer = titleRow.children[3].textContent.trim();
+          
+          let lyrics = lyricsRow.textContent.trim();
+          
+          // // remove "..." at the beginning
+          // if (lyrics.startsWith("...")) {
+          //   lyrics = lyrics.slice(3);
+          // }
+
+          // // remove "..." at the end
+          // if (lyrics.endsWith("...")) {
+          //   lyrics = lyrics.slice(0, -3);
+          // }
+          
+          const song = {
+            title: title,
+            artists: [
+              { type: "artist", artists: [artist] },
+              { type: "lyricist", artists: [lyricist] },
+              { type: "composer", artists: [composer] },
+            ],
+            lyricsSample: lyrics,
+          };
+          
+          results.push(song);
+        }
       }
       
-      return results;
+      // filter out duplicates
+      const uniqueResults = new Map();
+      for (let i=0; i < results.length; i++) {
+        const result = results[i];
+        const messageBuffer = new TextEncoder().encode(JSON.stringify(result));
+        const messageHash = encodeHex(messageBuffer);
+        if (!uniqueResults.has(messageHash)) {
+          uniqueResults.set(messageHash, result);
+        } else {
+          // remove duplicate
+          results.splice(i, 1);
+          i--; // adjust index after removal
+        }
+      }
+      
+      // filter array for songs that don't match the required fields
+      const filteredResults = results.filter(song => {
+        const songArtists = song.artists;
+        for (const field of searchFields) {
+          // handle irregular fields
+          if (field === "title") {
+            if (!song.title.includes(info.title)) return false;
+            continue;
+          }
+          if (field === "contains") {
+            if (!song.lyricsSample.includes(info.contains)) return false;
+            continue;
+          }
+          
+          // handle artists
+          const fieldArtist = songArtists.find(artist => artist.type === field).artists[0];
+          if (!fieldArtist || !fieldArtist.includes(info[field])) return false;
+        }
+        return true;
+      });
+
+      return filteredResults;
     }
   }
 }
