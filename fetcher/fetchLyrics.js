@@ -166,6 +166,39 @@ const sitesData = {
       
       return songResults; // [song];
     }
+  },
+  utanet: {
+    name: "UtaNet",
+    url: "https://www.uta-net.com",
+    /**
+     * fetch lyrics from utanet
+     * @param {Object} info - song information (in general format)
+     * @returns {Promise<Array>} - array of song results
+     */
+    async fetchLyrics(info) {
+      const results = [];
+      
+      // todo: add support for other fields which uses previous system which can be accessed by clicking the lyrics search option
+      
+      // utanet only supports search by a single field
+      const availableFields = [
+        "title",
+      ];
+      
+      const fieldURL = {
+        "title": "https://www.uta-net.com/search/?sort=4&Keyword=",
+      };
+      
+      // construct array with available fields
+      const searchFields = availableFields.filter(field => info[field]);
+      
+      for (const field of searchFields) {
+        const value = info[field];
+        // implement the fetch logic for utanet
+      }
+      
+      return results;
+    }
   }
 }
 
