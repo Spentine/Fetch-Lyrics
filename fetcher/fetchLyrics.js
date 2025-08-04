@@ -1,5 +1,4 @@
 import { DOMParser, Element } from "jsr:@b-fuze/deno-dom";
-import { encodeHex } from "jsr:@std/encoding/hex";
 
 const requiredFields = ["title", "artist", "lyricist", "composer", "opening", "contains"];
 
@@ -177,7 +176,7 @@ const sitesData = {
         lyrics: lyrics.trim(),
         rubyLyrics: rubyLyrics.trim(),
       };
-    }
+    },
   },
   utanet: {
     name: "UtaNet",
@@ -232,6 +231,8 @@ const sitesData = {
           const lyricist = titleRow.children[2].textContent.trim();
           const composer = titleRow.children[3].textContent.trim();
           
+          const link = titleRow.children[0].children[0].getAttribute("href");
+          
           let lyrics = lyricsRow.textContent.trim();
           
           // // remove "..." at the beginning
@@ -246,6 +247,7 @@ const sitesData = {
           
           const song = {
             title: title,
+            url: `https://www.uta-net.com${link}`,
             artists: [
               { type: "artist", artists: [artist] },
               { type: "lyricist", artists: [lyricist] },
@@ -262,10 +264,9 @@ const sitesData = {
       const uniqueResults = new Map();
       for (let i=0; i < results.length; i++) {
         const result = results[i];
-        const messageBuffer = new TextEncoder().encode(JSON.stringify(result));
-        const messageHash = encodeHex(messageBuffer);
-        if (!uniqueResults.has(messageHash)) {
-          uniqueResults.set(messageHash, result);
+        const url = result.url;
+        if (!uniqueResults.has(url)) {
+          uniqueResults.set(url, result);
         } else {
           // remove duplicate
           results.splice(i, 1);
@@ -294,8 +295,45 @@ const sitesData = {
         return true;
       });
 
-      return filteredResults;
-    }
+      if (filteredResults.length !== 1) return filteredResults;
+      
+      // if there is only one result, fetch the full lyrics
+      const song = filteredResults[0];
+      const url = song.url;
+      const { lyrics } = await sitesData.utanet.singlePageLyrics(url);
+      
+      // add the full lyrics to the song object
+      song.lyrics = lyrics;
+      
+      return filteredResults; // [song];
+    },
+    singlePageLyrics: async (link) => {
+      const fullLyricsResponse = await fetch(link);
+      const fullLyricsHtml = await fullLyricsResponse.text();
+      
+      const fullLyricsDoc = new DOMParser().parseFromString(fullLyricsHtml, "text/html");
+      
+      // get lyrics element
+      const lyricsElement = fullLyricsDoc.getElementById("kashi_area");
+      
+      const lyricsCollection = lyricsElement.childNodes;
+      
+      let lyrics = "";
+      for (const node of lyricsCollection) {
+        const nodeName = node.nodeName;
+        
+        if (nodeName === "#text") {
+          lyrics += node.textContent.trim();
+        } else if (nodeName === "BR") {
+          lyrics += "\n";
+        }
+      }
+      
+      // return the lyrics
+      return {
+        lyrics: lyrics,
+      };
+    },
   }
 }
 
