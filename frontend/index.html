@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" type="module"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1> Fetch Lyrics </h1>
+    </div>
+    <div class="container">
+      <h2> Search Lyrics </h2>
+      <br>
+      <div id="queryTable">
+        <div class="grid-item">
+          <label for="titleInput" class="query-label"> Title </label>
+          <input type="text" id="titleInput" class="query-input"> </input>
+        </div>
+        <div class="grid-item">
+          <label for="artistInput" class="query-label"> Artist </label>
+          <input type="text" id="artistInput" class="query-input"> </input>
+        </div>
+        <div class="grid-item">
+          <label for="lyricistInput" class="query-label"> Lyricist </label>
+          <input type="text" id="lyricistInput" class="query-input"> </input>
+        </div>
+        <div class="grid-item">
+          <label for="composerInput" class="query-label"> Composer </label>
+          <input type="text" id="composerInput" class="query-input"> </input>
+        </div>
+        <div class="grid-item">
+          <label for="openingInput" class="query-label"> Opening </label>
+          <input type="text" id="openingInput" class="query-input"> </input>
+        </div>
+        <div class="grid-item">
+          <label for="containsInput" class="query-label"> Contains </label>
+          <input type="text" id="containsInput" class="query-input"> </input>
+        </div>
+      </div>
+      <br>
+      <div class="center">
+        <button id="searchButton" class="button"> Search </button>
+      </div>
+    </div>
+    <div class="container">
+      <h2> Results </h2>
+    </div>
+  </body>
+</html>
