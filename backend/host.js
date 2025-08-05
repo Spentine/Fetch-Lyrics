@@ -1,4 +1,4 @@
-import { fetchLyrics, siteNames, sitesData, requiredFields } from "../fetcher/fetchLyrics.js";
+import { fetchSongs, siteNames, sitesData, requiredFields, fetchLyrics } from "../fetcher/fetchLyrics.js";
 
 async function handleRequests(req) {
   const method = req.method;
@@ -8,7 +8,7 @@ async function handleRequests(req) {
   if (method === "GET") {
     // i will make everything /api/ even though it's a little unnecessary
     // like maybe i will make a frontend hosted here but idk
-    if (path === "/api/fetchLyrics") {
+    if (path === "/api/fetchSongs") {
       const info = {};
       
       // extract query parameters and fill info object
@@ -17,13 +17,39 @@ async function handleRequests(req) {
           info[field] = url.searchParams.get(field);
         }
       }
-      const songResults = await fetchLyrics(info);
+      const songResults = await fetchSongs(info);
       
       // return json response
       return new Response(JSON.stringify(songResults), {
         headers: {
           "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*", // allow CORS for all origins
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+    } else if (path === "/api/fetchLyrics") {
+      const link = url.searchParams.get("link");
+      if (!link) return new Response("Link parameter is required", {
+        status: 400,
+        headers: {
+          "Content-Type": "text/plain",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+      
+      const lyrics = await fetchLyrics(link);
+      if (!lyrics) return new Response("Lyrics not found", {
+        status: 404,
+        headers: {
+          "Content-Type": "text/plain",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+
+      // return json response
+      return new Response(JSON.stringify(lyrics), {
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
         },
       });
     }
@@ -43,7 +69,7 @@ async function handleRequests(req) {
     status: 404,
     headers: {
       "Content-Type": "text/plain",
-      "Access-Control-Allow-Origin": "*", // allow CORS for all origins
+      "Access-Control-Allow-Origin": "*",
     },
   });
 }

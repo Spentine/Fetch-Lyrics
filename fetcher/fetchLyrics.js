@@ -107,21 +107,23 @@ const sitesData = {
         
         songResults.push(song);
       }
-
-      if (songResults.length !== 1) return songResults;
       
-      // if there is only one result, fetch the full lyrics
-      const song = songResults[0];
+      return songResults;
       
-      // get the song link
-      const songLink = song.link;
-      const { lyrics, rubyLyrics } = await sitesData.utaten.singlePageLyrics(songLink);
+      // if (songResults.length !== 1) return songResults;
       
-      // add the full lyrics to the song object
-      song.lyrics = lyrics;
-      song.rubyLyrics = rubyLyrics;
+      // // if there is only one result, fetch the full lyrics
+      // const song = songResults[0];
       
-      return songResults; // [song];
+      // // get the song link
+      // const songLink = song.link;
+      // const { lyrics, rubyLyrics } = await sitesData.utaten.singlePageLyrics(songLink);
+      
+      // // add the full lyrics to the song object
+      // song.lyrics = lyrics;
+      // song.rubyLyrics = rubyLyrics;
+      
+      // return songResults; // [song];
     },
     singlePageLyrics: async (link) => {
       const fullLyricsResponse = await fetch(link);
@@ -295,18 +297,20 @@ const sitesData = {
         }
         return true;
       });
+      
+      return filteredResults;
 
-      if (filteredResults.length !== 1) return filteredResults;
+      // if (filteredResults.length !== 1) return filteredResults;
       
-      // if there is only one result, fetch the full lyrics
-      const song = filteredResults[0];
-      const url = song.url;
-      const { lyrics } = await sitesData.utanet.singlePageLyrics(url);
+      // // if there is only one result, fetch the full lyrics
+      // const song = filteredResults[0];
+      // const url = song.url;
+      // const { lyrics } = await sitesData.utanet.singlePageLyrics(url);
       
-      // add the full lyrics to the song object
-      song.lyrics = lyrics;
+      // // add the full lyrics to the song object
+      // song.lyrics = lyrics;
       
-      return filteredResults; // [song];
+      // return filteredResults; // [song];
     },
     singlePageLyrics: async (link) => {
       const fullLyricsResponse = await fetch(link);
@@ -341,11 +345,11 @@ const sitesData = {
 const siteNames = Object.keys(sitesData);
 
 /**
- * fetch lyrics from all sites
+ * fetch songs from all sites
  * @param {Object} info - song information (in general format)
  * @returns {Promise<Array>} - array of song results from all sites
  */
-async function fetchLyrics(info) {
+async function fetchSongs(info) {
   // fill in missing fields with empty strings
   // consider replacing with null
   for (const field of requiredFields) {
@@ -356,7 +360,7 @@ async function fetchLyrics(info) {
   
   // make sure at least one field is filled
   const isEmpty = requiredFields.every(field => info[field] === "");
-  if (isEmpty) return results; // return empty array if no fields are filled
+  if (isEmpty) return []; // return empty array if no fields are filled
   
   // check cache first
   const queryString = convertQueryToString(info);
@@ -378,6 +382,7 @@ async function fetchLyrics(info) {
         for (const song of songCandidates) {
           results.push({
             site: siteName, // this is an api so don't use site.name
+            siteName: site.name,
             url: site.url,
             songInfo: song,
           });
@@ -396,4 +401,30 @@ async function fetchLyrics(info) {
   return results;
 }
 
-export { fetchLyrics, siteNames, sitesData, requiredFields };
+async function fetchLyrics(link) {
+  // find which site the link belongs to
+  const siteName = siteNames.find(name => link.includes(sitesData[name].url));
+  if (!siteName) return null; // site not found
+  const site = sitesData[siteName];
+  
+  try {
+    const lyricsInfo = await site.singlePageLyrics(link);
+    
+    const siteInformation = {
+      site: siteName,
+      siteName: site.name,
+      url: site.url,
+    };
+    
+    // merge site information with lyrics info
+    return {
+      ...siteInformation, ...lyricsInfo,
+    };
+    
+  } catch (error) {
+    console.error(`Error fetching lyrics from ${site.name}:`, error);
+    return null;
+  }
+}
+
+export { fetchSongs, siteNames, sitesData, requiredFields, fetchLyrics };

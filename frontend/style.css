@@ -76,3 +76,43 @@ button:hover {
   justify-content: center;
   align-items: center;
 }
+
+#songsContainer {
+  width: 100%;
+  display: flex;
+  
+  flex-direction: row;
+  align-content: flex-start;
+  align-items: stretch;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  
+  gap: 8px;
+}
+
+.song-item {
+  background-color: #282828;
+  padding: 8px;
+  border: 1px solid #383838;
+  
+  flex: 1;
+  
+  min-width: 200px;
+  min-height: 100px;
+  
+  transition: 0.1s;
+}
+
+.song-item:hover {
+  box-shadow: 0 0 10px 0px rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+
+.title {
+  font-weight: bold;
+}
+
+.subtitle {
+  font-style: italic;
+  color: #888888;
+}

@@ -5,7 +5,7 @@ const cache = [];
 function check(query) {
   // check if query is already cached
   const item = cache.find(item => item.query === query);
-  if (item) return item;
+  if (item) return item.result;
   return null;
 }
 
