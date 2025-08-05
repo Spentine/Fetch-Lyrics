@@ -3,7 +3,7 @@ body {
   background-color: #181818;
   color: #ffffff;
   
-  padding: 0;
+  padding: 16px;
   margin: 0;
 }
 
@@ -115,4 +115,11 @@ button:hover {
 .subtitle {
   font-style: italic;
   color: #888888;
+}
+
+#lyricsContainer {
+  line-height: 2;
+  font-size: 24px;
+  
+  text-align: center;
 }

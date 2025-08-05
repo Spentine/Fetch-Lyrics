@@ -32,7 +32,7 @@ Results will be returned in an array.
   "url": "https://utaten.com",
   "songInfo": [
     {
-      "link": /* {string} link to utaten page for song */
+      "url": /* {string} link to utaten page for song */
       "title": /* {string} full title of song */
       "artists": [
         /*

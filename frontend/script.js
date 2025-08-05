@@ -14,6 +14,22 @@ async function fetchSongs(info) {
   return data;
 }
 
+async function fetchLyrics(link) {
+  const api = "http://localhost:8400/api/fetchLyrics";
+  
+  // use this once it's in prod
+  // const api = "https://spentine.com/api/fetchLyrics";
+  
+  const params = new URLSearchParams({ link });
+  const url = `${api}?${params.toString()}`;
+  console.log("Fetching lyrics from:", url);
+
+  const response = await fetch(url);
+  const data = await response.json();
+
+  return data;
+}
+
 /**
  * (ai generated)
  * splits a title into two parts: the main title and the subtitle
@@ -58,8 +74,14 @@ function main() {
   // songs container
   const songsContainer = document.getElementById("songsContainer");
   
-  // results container
-  const resultsContainer = document.getElementById("resultsContainer");
+  // lyrics container
+  const lyricsContainer = document.getElementById("lyricsContainer");
+  
+  // get lyrics button
+  const getLyricsButton = document.getElementById("getLyricsButton");
+  
+  // link input for lyrics
+  const linkInput = document.getElementById("linkInput");
   
   searchButton.addEventListener("click", async () => {
     const info = {
@@ -79,6 +101,10 @@ function main() {
     
     displayResults(results);
   });
+  
+  function setLinkInput(link) {
+    linkInput.value = link;
+  }
   
   function displayResults(results) {
     // clear previous results
@@ -124,9 +150,49 @@ function main() {
       }
       resultElement.appendChild(siteElement);
       
+      resultElement.addEventListener("click", () => {
+        // set link input to the song's link
+        setLinkInput(songInfo.url);
+        
+        // scroll to the link input
+        linkInput.scrollIntoView({ behavior: "smooth" });
+      });
+      
       songsContainer.appendChild(resultElement);
     }
   }
+  
+  function displayLyrics(lyrics) {
+    // clear previous lyrics
+    while (lyricsContainer.firstChild) {
+      lyricsContainer.removeChild(lyricsContainer.firstChild);
+    }
+    
+    if (lyrics.rubyLyrics) {
+      lyricsContainer.innerHTML = lyrics.rubyLyrics;
+    } else {
+      let newLyrics = lyrics.lyrics;
+      // replace newlines with <br> tags
+      newLyrics = newLyrics.replace(/\n/g, "<br>");
+      lyricsContainer.innerHTML = newLyrics;
+    }
+  }
+  
+  getLyricsButton.addEventListener("click", async () => {
+    const link = linkInput.value;
+    if (!link) {
+      lyricsContainer.textContent = "Please enter a link to fetch lyrics.";
+      return;
+    }
+    
+    // fetch lyrics
+    const lyrics = await fetchLyrics(link);
+    
+    // display lyrics
+    console.log("Fetched Lyrics:", lyrics);
+    
+    displayLyrics(lyrics);
+  });
 }
 
 if (document.readyState === "loading") {

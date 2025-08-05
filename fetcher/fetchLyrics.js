@@ -1,5 +1,5 @@
 import { DOMParser, Element } from "jsr:@b-fuze/deno-dom";
-import { check, add, convertQueryToString } from "./cache.js";
+import { checkSongCache, addSongCache, convertQueryToString, checkLyricsCache, addLyricsCache } from "./cache.js";
 
 const requiredFields = ["title", "artist", "lyricist", "composer", "opening", "contains"];
 
@@ -99,7 +99,7 @@ const sitesData = {
         const beginning = lyricElement.textContent.trim();
         
         const song = {
-          link: songLink,
+          url: songLink,
           title: songTitle,
           artists: artists,
           beginning: beginning,
@@ -364,7 +364,7 @@ async function fetchSongs(info) {
   
   // check cache first
   const queryString = convertQueryToString(info);
-  const cachedResult = check(queryString);
+  const cachedResult = checkSongCache(queryString);
   if (cachedResult) {
     console.log("Cache hit for query:", queryString);
     return cachedResult;
@@ -396,12 +396,19 @@ async function fetchSongs(info) {
   console.log("Fetched lyrics from all sites:", results);
   
   // cache the results
-  add(queryString, results);
+  addSongCache(queryString, results);
   
   return results;
 }
 
 async function fetchLyrics(link) {
+  // check cache first
+  const cachedLyrics = checkLyricsCache(link);
+  if (cachedLyrics) {
+    console.log("Cache hit for lyrics link:", link);
+    return cachedLyrics;
+  }
+  
   // find which site the link belongs to
   const siteName = siteNames.find(name => link.includes(sitesData[name].url));
   if (!siteName) return null; // site not found
@@ -417,10 +424,17 @@ async function fetchLyrics(link) {
     };
     
     // merge site information with lyrics info
-    return {
+    const full = {
       ...siteInformation, ...lyricsInfo,
     };
     
+    // cache the lyrics
+    addLyricsCache(link, full);
+    
+    console.log("Fetched lyrics from site:", site.name);
+    console.log("Lyrics info:", full);
+    
+    return full;
   } catch (error) {
     console.error(`Error fetching lyrics from ${site.name}:`, error);
     return null;

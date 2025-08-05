@@ -1,17 +1,17 @@
 // cache some query results to avoid repeated requests
 
-const cache = [];
+const songCache = [];
 
-function check(query) {
+function checkSongCache(query) {
   // check if query is already cached
-  const item = cache.find(item => item.query === query);
+  const item = songCache.find(item => item.query === query);
   if (item) return item.result;
   return null;
 }
 
-function add(query, result) {
+function addSongCache(query, result) {
   // add query result to cache
-  cache.push({ query, result });
+  songCache.push({ query, result });
 }
 
 function convertQueryToString(info) {
@@ -31,4 +31,19 @@ function convertQueryToString(info) {
   return JSON.stringify(q);
 }
 
-export { check, add, convertQueryToString };
+const lyricsCache = [];
+
+function checkLyricsCache(link) {
+  // check if link is already cached
+  const item = lyricsCache.find(item => item.link === link);
+  if (item) return item.lyrics;
+
+  return null;
+}
+
+function addLyricsCache(link, lyrics) {
+  // add lyrics to cache
+  lyricsCache.push({ link, lyrics });
+}
+
+export { checkSongCache, addSongCache, convertQueryToString, checkLyricsCache, addLyricsCache };
