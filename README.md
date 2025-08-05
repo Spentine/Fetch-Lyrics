@@ -1,10 +1,10 @@
-This project should fetch lyrics from different sites. It should mainly have Japanese support. It will be an API where a `GET` request fetches song lyrics. There should also be a frontend to interact.
+This API fetches lyrics from different sites. It mainly has Japanese support. `GET` requests fetches song lyrics. A frontend can be found [here](https://spentine.github.io/Fetch-Lyrics/frontend/).
 
 # API
 
 ## Sites
 
-Japanese song lyric sites will be added:
+Japanese song lyric sites included:
 
 - (Japanese)
   - Utaten
