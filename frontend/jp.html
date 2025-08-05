@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="jp">
   <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style.css">
@@ -7,64 +7,64 @@
   </head>
   <body>
     <div class="container">
-      <h1> Fetch Lyrics (Japanese Sites) </h1>
-      <p class="changeLanguage">
-        <a href="https://spentine.github.io/Fetch-Lyrics/frontend/jp"> 日本語 </a>
-      </p>
+      <h1> 歌詞を取得 </h1>
+        <p class="changeLanguage">
+          <a href="https://spentine.github.io/Fetch-Lyrics/frontend/"> English </a>
+        </p>
     </div>
     <div class="container">
-      <h2> Search Songs </h2>
+      <h2> 曲検索 </h2>
       <br>
       <div id="queryTable">
         <div class="grid-item">
-          <label for="titleInput" class="query-label"> Title </label>
+          <label for="titleInput" class="query-label"> 曲名 </label>
           <input type="text" id="titleInput" class="query-input"> </input>
         </div>
         <div class="grid-item">
-          <label for="artistInput" class="query-label"> Artist </label>
+          <label for="artistInput" class="query-label"> アーティスト </label>
           <input type="text" id="artistInput" class="query-input"> </input>
         </div>
         <div class="grid-item">
-          <label for="lyricistInput" class="query-label"> Lyricist </label>
+          <label for="lyricistInput" class="query-label"> 作詞家 </label>
           <input type="text" id="lyricistInput" class="query-input"> </input>
         </div>
         <div class="grid-item">
-          <label for="composerInput" class="query-label"> Composer </label>
+          <label for="composerInput" class="query-label"> 作曲家 </label>
           <input type="text" id="composerInput" class="query-input"> </input>
         </div>
         <div class="grid-item">
-          <label for="openingInput" class="query-label"> Opening </label>
+          <label for="openingInput" class="query-label"> 歌い出し </label>
           <input type="text" id="openingInput" class="query-input"> </input>
         </div>
         <div class="grid-item">
-          <label for="containsInput" class="query-label"> Contains </label>
+          <label for="containsInput" class="query-label"> 歌詞の一部 </label>
           <input type="text" id="containsInput" class="query-input"> </input>
         </div>
       </div>
       <br>
       <div class="center">
-        <button id="searchButton" class="button"> Search </button>
+        <button id="searchButton" class="button"> 検索 </button>
       </div>
     </div>
     <div class="container">
-      <h2> Songs </h2>
+      <h2> 曲一覧 </h2>
       <br>
       <div id="songsContainer"> </div>
     </div>
     <div class="container">
-      <h2> Get Lyrics </h2>
+      <h2> 歌詞取得 </h2>
       <br>
       <div class="center">
-        <label for="linkInput" class="query-label"> Link </label>
+        <label for="linkInput" class="query-label"> リンク </label>
         <input type="text" id="linkInput" class="query-input"> </input>
       </div>
       <br>
       <div class="center">
-        <button id="getLyricsButton" class="button"> Get Lyrics </button>
+        <button id="getLyricsButton" class="button"> 歌詞を取得 </button>
       </div>
     </div>
     <div class="container">
-      <h2> Lyrics </h2>
+      <h2> 歌詞 </h2>
       <br>
       <p id="lyricsContainer"> </p>
     </div>

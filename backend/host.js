@@ -17,6 +17,8 @@ async function handleRequests(req) {
           info[field] = url.searchParams.get(field);
         }
       }
+      
+      console.log("Fetching songs with info:", info);
       const songResults = await fetchSongs(info);
       
       // return json response
@@ -36,6 +38,7 @@ async function handleRequests(req) {
         },
       });
       
+      console.log("Fetching lyrics for link:", link);
       const lyrics = await fetchLyrics(link);
       if (!lyrics) return new Response("Lyrics not found", {
         status: 404,

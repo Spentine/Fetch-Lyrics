@@ -16,6 +16,10 @@ h1, h2, h3, p {
   font-weight: normal;
 }
 
+rt {
+  color: #8888ff;
+}
+
 button, select, input {
   font-family: inherit;
   font-size: inherit;
@@ -122,4 +126,14 @@ button:hover {
   font-size: 24px;
   
   text-align: center;
+}
+
+.changeLanguage {
+  text-align: center;
+  color: #888888;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
 }

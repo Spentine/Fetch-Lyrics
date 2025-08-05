@@ -1,8 +1,24 @@
+const translations = {
+  en: {
+    siteSpecify: "Site",
+    noSongsFound: "No songs found.",
+    noTitle: "<No Title>",
+    enterLink: "Please enter a link to fetch lyrics.",
+  },
+  jp: {
+    siteSpecify: "サイト",
+    noSongsFound: "曲が見つかりませんでした。",
+    noTitle: "<曲名なし>",
+    enterLink: "歌詞を取得するためのリンクを入力してください。",
+  }
+};
+const language = document.documentElement.lang ?? "en";
+
 async function fetchSongs(info) {
-  const api = "http://localhost:8400/api/fetchSongs";
+  // const api = "http://localhost:8400/api/fetchSongs";
   
   // use this once it's in prod
-  // const api = "https://spentine.com/api/fetchSongs";
+  const api = "https://spentine.com/fL/api/fetchSongs";
   
   const params = new URLSearchParams(info);
   const url = `${api}?${params.toString()}`;
@@ -15,10 +31,10 @@ async function fetchSongs(info) {
 }
 
 async function fetchLyrics(link) {
-  const api = "http://localhost:8400/api/fetchLyrics";
+  // const api = "http://localhost:8400/api/fetchLyrics";
   
   // use this once it's in prod
-  // const api = "https://spentine.com/api/fetchLyrics";
+  const api = "https://spentine.com/fL/api/fetchLyrics";
   
   const params = new URLSearchParams({ link });
   const url = `${api}?${params.toString()}`;
@@ -115,7 +131,7 @@ function main() {
     // check if results are empty
     if (results.length === 0) {
       const noResultsMessage = document.createElement("p");
-      noResultsMessage.textContent = "No songs found.";
+      noResultsMessage.textContent = translations[language].noSongsFound;
       songsContainer.appendChild(noResultsMessage);
       return;
     }
@@ -132,7 +148,7 @@ function main() {
       
       const titleElement = document.createElement("h3");
       titleElement.className = "title";
-      titleElement.textContent = mainTitle ?? "<No Title>";
+      titleElement.textContent = mainTitle ?? translations[language].noTitle;
       
       let subtitleElement;
       if (subtitle) {
@@ -142,8 +158,8 @@ function main() {
       }
       
       const siteElement = document.createElement("p");
-      siteElement.textContent = `Site: ${result.siteName}`;
-      
+      siteElement.textContent = `${translations[language].siteSpecify}: ${result.siteName}`;
+
       resultElement.appendChild(titleElement);
       if (subtitleElement) {
         resultElement.appendChild(subtitleElement);
@@ -181,7 +197,7 @@ function main() {
   getLyricsButton.addEventListener("click", async () => {
     const link = linkInput.value;
     if (!link) {
-      lyricsContainer.textContent = "Please enter a link to fetch lyrics.";
+      lyricsContainer.textContent = translations[language].enterLink;
       return;
     }
     
