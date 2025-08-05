@@ -1,4 +1,5 @@
 import { DOMParser, Element } from "jsr:@b-fuze/deno-dom";
+import { check, add, convertQueryToString } from "./cache.js";
 
 const requiredFields = ["title", "artist", "lyricist", "composer", "opening", "contains"];
 
@@ -203,7 +204,7 @@ const sitesData = {
       };
       
       // construct array with available fields
-      const searchFields = availableFields.filter(field => info[field]);
+      const searchFields = availableFields.filter(field => info[field] !== "");
       
       for (const field of searchFields) {
         const value = info[field];
@@ -345,15 +346,29 @@ const siteNames = Object.keys(sitesData);
  * @returns {Promise<Array>} - array of song results from all sites
  */
 async function fetchLyrics(info) {
-  const results = [];
-
   // fill in missing fields with empty strings
   // consider replacing with null
   for (const field of requiredFields) {
     if (!info[field]) {
       info[field] = "";
     }
+  } 
+  
+  // make sure at least one field is filled
+  const isEmpty = requiredFields.every(field => info[field] === "");
+  if (isEmpty) return results; // return empty array if no fields are filled
+  
+  // check cache first
+  const queryString = convertQueryToString(info);
+  const cachedResult = check(queryString);
+  if (cachedResult) {
+    console.log("Cache hit for query:", queryString);
+    return cachedResult;
   }
+
+  console.log("Fetching lyrics with info:", info);
+  
+  const results = [];
   
   for (const siteName of siteNames) {
     const site = sitesData[siteName];
@@ -372,6 +387,11 @@ async function fetchLyrics(info) {
       console.error(`Error fetching lyrics from ${site.name}:`, error);
     }
   }
+  
+  console.log("Fetched lyrics from all sites:", results);
+  
+  // cache the results
+  add(queryString, results);
   
   return results;
 }
