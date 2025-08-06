@@ -2,12 +2,12 @@ import { fetchLyrics, siteNames, sitesData } from "./fetcher/fetchLyrics.js";
 
 async function test() {
   const info = {
-    title: "きみに回帰線",
+    title: "a",
   };
   
-  // const testResults = await sitesData.utanet.fetchLyrics(info);
-  const testResults = await fetchLyrics(info);
-  console.log("Fetched Lyrics Results:", testResults);
+  const testResults = await sitesData.imicom.fetchSongs(info);
+  // const testResults = await fetchSongs(info);
+  console.log("Fetched Songs Results:", testResults);
 }
 
 test();

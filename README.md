@@ -9,6 +9,7 @@ Japanese song lyric sites included:
 - (Japanese)
   - Utaten
   - Uta-Net
+  - Imitate Community
 
 ## Fetch Songs API
 
@@ -42,7 +43,7 @@ The results will be returned in an array of songs, where the format for one song
           for example, it is possible for two or more people to work on the composition
         */
         {
-          "type": /* {"lyricist" | "composer" | "arranger"} the type of artist */
+          "type": /* {"artist" | "lyricist" | "composer" | "arranger"} the type of artist */
           "artists": /* {string[]} array of artists of a certain type */
         },
       ],

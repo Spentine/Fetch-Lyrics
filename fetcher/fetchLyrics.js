@@ -13,7 +13,7 @@ const sitesData = {
      * @param {Object} info - song information (in general format)
      * @returns {Promise<Array>} - array of song results
      */
-    fetchLyrics: async (info) => {
+    fetchSongs: async (info) => {
       // Implementation for fetching lyrics from UtaTen
       
       let link = (
@@ -125,7 +125,7 @@ const sitesData = {
       
       // return songResults; // [song];
     },
-    singlePageLyrics: async (link) => {
+    fetchLyrics: async (link) => {
       const fullLyricsResponse = await fetch(link);
       const fullLyricsHtml = await fullLyricsResponse.text();
       
@@ -189,7 +189,7 @@ const sitesData = {
      * @param {Object} info - song information (in general format)
      * @returns {Promise<Array>} - array of song results
      */
-    async fetchLyrics(info) {
+    async fetchSongs(info) {
       const results = [];
       
       // utanet only supports search by a single field
@@ -312,7 +312,7 @@ const sitesData = {
       
       // return filteredResults; // [song];
     },
-    singlePageLyrics: async (link) => {
+    fetchLyrics: async (link) => {
       const fullLyricsResponse = await fetch(link);
       const fullLyricsHtml = await fullLyricsResponse.text();
       
@@ -338,6 +338,84 @@ const sitesData = {
       return {
         lyrics: lyrics,
       };
+    },
+  },
+  imicom: {
+    name: "Imitate Community",
+    url: "https://lyrics.imicomweb.com",
+    fetchSongs: async (info) => {
+      const baseURL = "https://lyrics.imicomweb.com/api/html/song_cards";
+      
+      // construct the query parameters
+      const baseQuery = {
+        isjoke: "false",
+        sort: "-view", // descending by view count
+        page: 1,
+      };
+      const queryMap = {
+        "title": "title",
+        "artist": "channel",
+        "contains": "lyrics",
+      }
+      for (const queryField of Object.keys(queryMap)) {
+        if (info[queryField]) {
+          baseQuery[queryMap[queryField]] = info[queryField];
+        }
+      }
+      const queryString = new URLSearchParams(baseQuery).toString();
+      
+      // construct the full URL
+      const fullURL = `${baseURL}?${queryString}`;
+      
+      const response = await fetch(fullURL);
+      const data = await response.json();
+      
+      const results = [];
+      
+      // it's a weird json thing where each item is html
+      for (const item of data) {
+        // for some reason songs start with two newlines before getting to the actual content
+        // however with the loading animation and text at the top it doesn't do that
+        if (!item.startsWith("\n\n")) continue;
+        
+        // parse the html
+        const doc = new DOMParser().parseFromString(item, "text/html");
+        
+        const songCard = doc.querySelector(".song-card");
+        const link = songCard.getAttribute("href");
+        
+        const rows = songCard.getElementsByTagName("tr");
+        const title = rows[0].children[0].lastChild.textContent;
+        
+        const artist = rows[1].children[0].lastChild.textContent;
+        const artists = [];
+        if (artist !== "合作") { // japanese for "collaboration"
+          artists.push({
+            type: "artist",
+            artists: [artist],
+          });
+        }
+        
+        let beginning = rows[1].children[2].lastChild.textContent;
+        if (beginning === "インスト曲") { // japanese for "instrumental"
+          beginning = null;
+        }
+        
+        const song = {
+          title: title,
+          url: `https://lyrics.imicomweb.com${link}`,
+          artists: artists,
+        };
+        
+        if (beginning) song.beginning = beginning;
+        
+        // add the song to the results
+        results.push(song);
+      }
+      return results;
+    },
+    fetchLyrics: async (info) => {
+      
     },
   }
 }
@@ -377,7 +455,7 @@ async function fetchSongs(info) {
   for (const siteName of siteNames) {
     const site = sitesData[siteName];
     try {
-      const songCandidates = await site.fetchLyrics(info);
+      const songCandidates = await site.fetchSongs(info);
       if (songCandidates) {
         for (const song of songCandidates) {
           results.push({
@@ -415,8 +493,8 @@ async function fetchLyrics(link) {
   const site = sitesData[siteName];
   
   try {
-    const lyricsInfo = await site.singlePageLyrics(link);
-    
+    const lyricsInfo = await site.fetchLyrics(link);
+
     const siteInformation = {
       site: siteName,
       siteName: site.name,
