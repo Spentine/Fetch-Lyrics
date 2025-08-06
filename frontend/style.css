@@ -121,6 +121,15 @@ button:hover {
   color: #888888;
 }
 
+.site {
+  color: #888888;
+}
+
+.lyrics-sample {
+  color: #ddddff;
+  margin-top: 8px;
+}
+
 #lyricsContainer {
   line-height: 2;
   font-size: 24px;

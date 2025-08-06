@@ -33,26 +33,24 @@ The results will be returned in an array of songs, where the format for one song
   "site": /* {string} name of site in more program-friendly format */
   "siteName": /* {string} name of site in human-friendly format */
   "url": /* site hostname */
-  "songInfo": [
-    {
-      "url": /* {string} link to page for song */
-      "title": /* {string} full title of song */
-      "artists": [
-        /*
-          this format is used because there may be multiple artists who worked on the same component of a song
-          for example, it is possible for two or more people to work on the composition
-        */
-        {
-          "type": /* {"artist" | "lyricist" | "composer" | "arranger"} the type of artist */
-          "artists": /* {string[]} array of artists of a certain type */
-        },
-      ],
-      
-      // the bottom two keys may or may not exist
-      "beginning": /* {string} the beginning of the lyrics in raw text format*/
-      "lyricsSample": /* {string} a sample of the lyrics */
-    },
-  ]
+  "songInfo": {
+    "url": /* {string} link to page for song */
+    "title": /* {string} full title of song */
+    "artists": [
+      /*
+        this format is used because there may be multiple artists who worked on the same component of a song
+        for example, it is possible for two or more people to work on the composition
+      */
+      {
+        "type": /* {"artist" | "lyricist" | "composer" | "arranger"} the type of artist */
+        "artists": /* {string[]} array of artists of a certain type */
+      },
+    ],
+    
+    // the bottom two keys may or may not exist
+    "beginning": /* {string} the beginning of the lyrics in raw text format*/
+    "lyricsSample": /* {string} a sample of the lyrics */
+  }
 }
 ```
 

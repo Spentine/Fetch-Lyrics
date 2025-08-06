@@ -158,13 +158,28 @@ function main() {
       }
       
       const siteElement = document.createElement("p");
+      siteElement.className = "site";
       siteElement.textContent = `${translations[language].siteSpecify}: ${result.siteName}`;
+      
+      const lyricsSample = document.createElement("p");
+      lyricsSample.className = "lyrics-sample";
+      if (songInfo.beginning) lyricsSample.textContent = songInfo.beginning;
+      if (songInfo.lyricsSample) lyricsSample.textContent = songInfo.lyricsSample;
+      
+      const maxLength = 30;
+      if (lyricsSample.textContent.length > maxLength) {
+        // truncate lyrics sample to maxLength characters
+        lyricsSample.textContent = lyricsSample.textContent.slice(0, maxLength);
+      }
+      lyricsSample.textContent += "...";
 
       resultElement.appendChild(titleElement);
       if (subtitleElement) {
         resultElement.appendChild(subtitleElement);
       }
       resultElement.appendChild(siteElement);
+      
+      resultElement.appendChild(lyricsSample);
       
       resultElement.addEventListener("click", () => {
         // set link input to the song's link
