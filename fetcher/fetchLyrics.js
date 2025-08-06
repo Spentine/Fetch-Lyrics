@@ -414,8 +414,32 @@ const sitesData = {
       }
       return results;
     },
-    fetchLyrics: async (info) => {
+    fetchLyrics: async (link) => {
+      const fullLyricsResponse = await fetch(link);
+      const fullLyricsHtml = await fullLyricsResponse.text();
       
+      const fullLyricsDoc = new DOMParser().parseFromString(fullLyricsHtml, "text/html");
+      
+      // get lyrics element
+      const lyricsElement = fullLyricsDoc.getElementById("lyrics");
+      
+      const lyricsCollection = lyricsElement.childNodes;
+      
+      let lyrics = "";
+      for (const node of lyricsCollection) {
+        const nodeName = node.nodeName;
+        
+        if (nodeName === "#text") {
+          lyrics += node.textContent.trim();
+        } else if (nodeName === "BR") {
+          lyrics += "\n";
+        }
+      }
+      
+      // return the lyrics
+      return {
+        lyrics: lyrics,
+      };
     },
   }
 }
