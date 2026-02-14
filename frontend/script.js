@@ -17,10 +17,10 @@ const translations = {
 const language = document.documentElement.lang ?? "en";
 
 async function fetchSongs(info) {
-  const api = "http://localhost:8400/api/fetchSongs";
+  // const api = "http://localhost:8400/api/fetchSongs";
   
   // use this once it's in prod
-  // const api = "https://spentine.com/fL/api/fetchSongs";
+  const api = "https://spentine.com/fL/api/fetchSongs";
   
   const params = new URLSearchParams(info);
   const url = `${api}?${params.toString()}`;
