@@ -7,7 +7,7 @@ async function test() {
   
   // const testResults = await sitesData.imicom.fetchSongs(info);
   // const testResults = await fetchSongs(info);
-  const testResults = await sitesData.imicom.fetchLyrics("https://lyrics.imicomweb.com/songs/1513/");
+  const testResults = await sitesData.utaten.fetchLyrics("https://utaten.com/lyric/ja00004664/");
   console.log("Fetched Songs Results:", testResults);
 }
 

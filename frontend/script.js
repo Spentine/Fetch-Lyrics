@@ -4,21 +4,23 @@ const translations = {
     noSongsFound: "No songs found.",
     noTitle: "<No Title>",
     enterLink: "Please enter a link to fetch lyrics.",
+    fetchingSongs: "Fetching songs...",
   },
   jp: {
     siteSpecify: "サイト",
     noSongsFound: "曲が見つかりませんでした。",
     noTitle: "<曲名なし>",
     enterLink: "歌詞を取得するためのリンクを入力してください。",
+    fetchingSongs: "曲を取得しています...",
   }
 };
 const language = document.documentElement.lang ?? "en";
 
 async function fetchSongs(info) {
-  // const api = "http://localhost:8400/api/fetchSongs";
+  const api = "http://localhost:8400/api/fetchSongs";
   
   // use this once it's in prod
-  const api = "https://spentine.com/fL/api/fetchSongs";
+  // const api = "https://spentine.com/fL/api/fetchSongs";
   
   const params = new URLSearchParams(info);
   const url = `${api}?${params.toString()}`;
@@ -31,10 +33,10 @@ async function fetchSongs(info) {
 }
 
 async function fetchLyrics(link) {
-  // const api = "http://localhost:8400/api/fetchLyrics";
+  const api = "http://localhost:8400/api/fetchLyrics";
   
   // use this once it's in prod
-  const api = "https://spentine.com/fL/api/fetchLyrics";
+  // const api = "https://spentine.com/fL/api/fetchLyrics";
   
   const params = new URLSearchParams({ link });
   const url = `${api}?${params.toString()}`;
@@ -109,13 +111,20 @@ function main() {
       contains: containsInput.value,
     };
     
+    songsContainer.textContent = translations[language].fetchingSongs;
+    
     // fetch songs
     const results = await fetchSongs(info);
     
     // display results
     console.log("Fetched Lyrics Results:", results);
     
-    displayResults(results);
+    try {
+      displayResults(results);
+    } catch (error) {
+      console.error("Error displaying results:", error);
+      songsContainer.textContent = translations[language].noSongsFound;
+    }
   });
   
   function setLinkInput(link) {

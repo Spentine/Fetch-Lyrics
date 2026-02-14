@@ -153,8 +153,16 @@ const sitesData = {
         
         if (nodeName === "#text") {
           // if it's a text node, just append the text
-          lyrics += node.textContent.trim();
-          rubyLyrics += node.textContent.trim();
+          let content = node.textContent;
+          
+          if (content.trim() === "") {
+            content = " ";
+          } else {
+            content = content.trim();
+          }
+          
+          lyrics += content;
+          rubyLyrics += content;
         } else if (nodeName === "BR") {
           rubyLyrics += "<br>";
           lyrics += "\n";
