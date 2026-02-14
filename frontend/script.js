@@ -33,10 +33,10 @@ async function fetchSongs(info) {
 }
 
 async function fetchLyrics(link) {
-  const api = "http://localhost:8400/api/fetchLyrics";
+  // const api = "http://localhost:8400/api/fetchLyrics";
   
   // use this once it's in prod
-  // const api = "https://spentine.com/fL/api/fetchLyrics";
+  const api = "https://spentine.com/fL/api/fetchLyrics";
   
   const params = new URLSearchParams({ link });
   const url = `${api}?${params.toString()}`;
